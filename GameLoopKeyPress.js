@@ -223,7 +223,7 @@ function updateTimer() {
 
 
 function updateScoreMessage() {
-    scoreMessage.textContent = `Score: ${score}`;
+    scoreMessage.textContent = `Score: ${score} / 100`;
 }
 
 function handleCollisions() {
