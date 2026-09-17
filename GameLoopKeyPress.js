@@ -198,6 +198,7 @@ let allCollected = false;
 const gameStartTime = performance.now();
 const gameDuration = 20;
 let score = 0;
+let timeUp = false;
 
 function updateTimerMessage(secondsRemaining) {
     if (secondsRemaining === 0) {
@@ -210,6 +211,7 @@ function updateTimerMessage(secondsRemaining) {
         timerMessage.style.textAlign = "center";
         timerMessage.style.fontSize = "15vw";
         timerMessage.style.color = "#ff3333";
+        timeUp = true;
     } else {
         timerMessage.textContent = `Time: ${secondsRemaining}`;
     }
@@ -251,7 +253,7 @@ function handleCollisions() {
 function animate() {
 
 
-    if (score < 100) {
+    if (score < 100 && !timeUp) {
         requestAnimationFrame(animate);
 
         updateTimer();
@@ -294,7 +296,7 @@ function animate() {
         updateScoreMessage();
 
         renderer.render(scene, camera);
-    } else {
+    } else if (score >= 100 && !timeUp) {
         collisionMessage.textContent = "Congratulations! You win!";
         collisionMessage.style.display = "block";
         collisionMessage.style.color = "#22cc55";
