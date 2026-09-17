@@ -12,6 +12,8 @@ const camera = new THREE.PerspectiveCamera(
     1000
 );
 
+let score = 0;
+
 camera.position.set(0, 10, 15);
 camera.lookAt(0, 0, 0);
 
@@ -46,6 +48,19 @@ timerMessage.style.color = "#ffffff";
 timerMessage.style.textShadow = "2px 2px 4px #000000";
 timerMessage.style.zIndex = "1";
 document.body.appendChild(timerMessage);
+
+// score message
+const scoreMessage = document.createElement("div");
+scoreMessage.style.position = "fixed";
+scoreMessage.style.top = "24px";
+scoreMessage.style.left = "24px";
+scoreMessage.style.fontFamily = "sans-serif";
+scoreMessage.style.fontSize = "24px";
+scoreMessage.style.fontWeight = "bold";
+scoreMessage.style.color = "#ffffff";
+scoreMessage.style.textShadow = "2px 2px 4px #000000";
+scoreMessage.style.zIndex = "1";
+document.body.appendChild(scoreMessage);
 
 // Ground Plane
 const planeGeometry = new THREE.PlaneGeometry(30, 30);
@@ -207,6 +222,10 @@ function updateCollisionMessage(isColliding) {
     }
 }
 
+function updateScoreMessage() {
+    scoreMessage.textContent = `Score: ${score}`;
+}
+
 function handleCollisions() {
     playerBounds.setFromObject(player);
     let isColliding = false;
@@ -222,6 +241,8 @@ function handleCollisions() {
             if (playerBounds.intersectsBox(objectBounds)) {
                 targetFound = true;
                 object.visible = false;
+                score += 10;
+                updateScoreMessage();
             }
 
             return;
@@ -247,6 +268,7 @@ function animate() {
     requestAnimationFrame(animate);
 
     updateTimer();
+    updateScoreMessage();
 
     // WASD Controls
     if (keys["w"]) {
