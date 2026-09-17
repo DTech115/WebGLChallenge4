@@ -233,7 +233,9 @@ function handleCollisions() {
     collectibles.forEach((object) => {
     
         objectBounds.setFromObject(object);
+        object.rotation.y += 0.02;
         const objectIsColliding = playerBounds.intersectsBox(objectBounds);
+
 
         if (objectIsColliding && !object.userData.collected) {
             isColliding = true;
