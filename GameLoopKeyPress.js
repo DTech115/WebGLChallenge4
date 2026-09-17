@@ -12,8 +12,6 @@ const camera = new THREE.PerspectiveCamera(
     1000
 );
 
-let score = 0;
-
 camera.position.set(0, 10, 15);
 camera.lookAt(0, 0, 0);
 
@@ -148,8 +146,6 @@ const collectibles = [
     )
 ];
 
-const targetObject = collectibles[collectibles.length - 1];
-
 function placeCubes(cubes) {
     const objectPositions = [];
 
@@ -198,9 +194,10 @@ const speed = 0.1;
 const playerBounds = new THREE.Box3();
 const objectBounds = new THREE.Box3();
 let collisionTime = 0;
-let targetFound = false;
+let allCollected = false;
 const gameStartTime = performance.now();
 const gameDuration = 20;
+let score = 0;
 
 function updateTimerMessage(secondsRemaining) {
     if (secondsRemaining === 0) {
@@ -224,23 +221,6 @@ function updateTimer() {
     updateTimerMessage(secondsRemaining);
 }
 
-function updateCollisionMessage(isColliding) {
-    if (targetFound) {
-        collisionMessage.textContent = "Congratulations! You win!";
-        collisionMessage.style.display = "block";
-        collisionMessage.style.color = "#22cc55";
-    } else if (isColliding) {
-        collisionMessage.textContent = "Collision is happening!";
-        collisionTime += 0.05;
-        collisionMessage.style.display = "block";
-        collisionMessage.style.color = `hsl(${(collisionTime * 180) % 360}, 100%, 50%)`;
-    } else {
-        collisionTime = 0;
-        collisionMessage.textContent = "Collision is happening!";
-        collisionMessage.style.display = "none";
-        collisionMessage.style.color = "#ffffff";
-    }
-}
 
 function updateScoreMessage() {
     scoreMessage.textContent = `Score: ${score}`;
@@ -251,82 +231,72 @@ function handleCollisions() {
     let isColliding = false;
 
     collectibles.forEach((object) => {
-        if (object === targetObject) {
-            if (targetFound) {
-                return;
-            }
-
-            objectBounds.setFromObject(object);
-
-            if (playerBounds.intersectsBox(objectBounds)) {
-                targetFound = true;
-                object.visible = false;
-                score += 10;
-                updateScoreMessage();
-            }
-
-            return;
-        }
-
+    
         objectBounds.setFromObject(object);
         const objectIsColliding = playerBounds.intersectsBox(objectBounds);
 
-        if (objectIsColliding) {
+        if (objectIsColliding && !object.userData.collected) {
             isColliding = true;
-            object.visible = Math.floor(performance.now() / 100) % 2 === 0;
-        } else {
-            object.visible = true;
+            object.userData.collected = true;
+            score += 10;
+            scene.remove(object);
         }
     });
 
-    updateCollisionMessage(isColliding);
 }
 
 // Animation Loop
 function animate() {
 
-    requestAnimationFrame(animate);
 
-    updateTimer();
-    updateScoreMessage();
+    if (score < 100) {
+        requestAnimationFrame(animate);
 
-    // WASD Controls
-    if (keys["w"]) {
-        player.position.z -= speed;
+        updateTimer();
+
+        // WASD Controls
+        if (keys["w"]) {
+            player.position.z -= speed;
+        }
+
+        if (keys["s"]) {
+            player.position.z += speed;
+        }
+
+        if (keys["a"]) {
+            player.position.x -= speed;
+        }
+
+        if (keys["d"]) {
+            player.position.x += speed;
+        }
+
+        // Arrow Key Controls
+        if (keys["arrowup"]) {
+            player.position.z -= speed;
+        }
+
+        if (keys["arrowdown"]) {
+            player.position.z += speed;
+        }
+
+        if (keys["arrowleft"]) {
+            player.position.x -= speed;
+        }
+
+        if (keys["arrowright"]) {
+            player.position.x += speed;
+        }
+
+        handleCollisions();
+        updateScoreMessage();
+
+        renderer.render(scene, camera);
+    } else {
+        collisionMessage.textContent = "Congratulations! You win!";
+        collisionMessage.style.display = "block";
+        collisionMessage.style.color = "#22cc55";
     }
-
-    if (keys["s"]) {
-        player.position.z += speed;
-    }
-
-    if (keys["a"]) {
-        player.position.x -= speed;
-    }
-
-    if (keys["d"]) {
-        player.position.x += speed;
-    }
-
-    // Arrow Key Controls
-    if (keys["arrowup"]) {
-        player.position.z -= speed;
-    }
-
-    if (keys["arrowdown"]) {
-        player.position.z += speed;
-    }
-
-    if (keys["arrowleft"]) {
-        player.position.x -= speed;
-    }
-
-    if (keys["arrowright"]) {
-        player.position.x += speed;
-    }
-
-    handleCollisions();
-
-    renderer.render(scene, camera);
 }
 
 animate();
