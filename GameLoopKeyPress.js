@@ -105,38 +105,58 @@ const player = new THREE.Mesh(
 player.position.y = 0.5;
 scene.add(player);
 
-const planeObjects = [
+const collectibles = [
     new THREE.Mesh(
-        new THREE.SphereGeometry(1, 32, 16),
+        new THREE.BoxGeometry(0.7, 0.7, 0.7),
         new THREE.MeshStandardMaterial({ color: 0xff6600 })
     ),
     new THREE.Mesh(
-        new THREE.ConeGeometry(1, 2, 32),
+        new THREE.BoxGeometry(0.7, 0.7, 0.7),
         new THREE.MeshStandardMaterial({ color: 0xff00aa })
     ),
     new THREE.Mesh(
-        new THREE.CylinderGeometry(1, 1, 2, 32),
+        new THREE.BoxGeometry(0.7, 0.7, 0.7),
         new THREE.MeshStandardMaterial({ color: 0xffff00 })
     ),
     new THREE.Mesh(
-        new THREE.TorusGeometry(1, 0.35, 16, 32),
+        new THREE.BoxGeometry(0.7, 0.7, 0.7),
         new THREE.MeshStandardMaterial({ color: 0x00ffff })
     ),
     new THREE.Mesh(
-        new THREE.IcosahedronGeometry(1.1, 0),
-        new THREE.MeshStandardMaterial({ color: 0x22cc55 })
+        new THREE.BoxGeometry(0.7, 0.7, 0.7),
+        new THREE.MeshStandardMaterial({ color: 0x00ff73 })
+    ),
+    new THREE.Mesh(
+        new THREE.BoxGeometry(0.7, 0.7, 0.7),
+        new THREE.MeshStandardMaterial({ color: 0xdedede })
+    ),
+    new THREE.Mesh(
+        new THREE.BoxGeometry(0.7, 0.7, 0.7),
+        new THREE.MeshStandardMaterial({ color: 0xaed123 })
+    ),
+    new THREE.Mesh(
+        new THREE.BoxGeometry(0.7, 0.7, 0.7),
+        new THREE.MeshStandardMaterial({ color: 0x12ea3d })
+    ),
+    new THREE.Mesh(
+        new THREE.BoxGeometry(0.7, 0.7, 0.7),
+        new THREE.MeshStandardMaterial({ color: 0x14e2af })
+    ),
+    new THREE.Mesh(
+        new THREE.BoxGeometry(0.7, 0.7, 0.7),
+        new THREE.MeshStandardMaterial({ color: 0x94def2 })
     )
 ];
 
-const targetObject = planeObjects[planeObjects.length - 1];
+const targetObject = collectibles[collectibles.length - 1];
 
-function placeObjects(objects) {
+function placeCubes(cubes) {
     const objectPositions = [];
 
-    while (objectPositions.length < objects.length) {
+    while (objectPositions.length < cubes.length) {
         const position = [
             Math.random() * 12 - 6,
-            1,
+            0.5,
             Math.random() * 12 - 6
         ];
         const isFarEnoughFromPlayer = Math.hypot(position[0], position[2]) > 2.5;
@@ -152,13 +172,13 @@ function placeObjects(objects) {
         }
     }
 
-    objects.forEach((object, index) => {
-        object.position.set(...objectPositions[index]);
-        scene.add(object);
+    cubes.forEach((cube, index) => {
+        cube.position.set(...objectPositions[index]);
+        scene.add(cube);
     });
 }
 
-placeObjects(planeObjects);
+placeCubes(collectibles);
 
 // Keyboard State Object
 const keys = {};
@@ -230,7 +250,7 @@ function handleCollisions() {
     playerBounds.setFromObject(player);
     let isColliding = false;
 
-    planeObjects.forEach((object) => {
+    collectibles.forEach((object) => {
         if (object === targetObject) {
             if (targetFound) {
                 return;
